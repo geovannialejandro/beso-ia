@@ -2,17 +2,24 @@
 
 import Replicate from 'replicate'
 
-// El servidor lee esto de las variables de entorno de Vercel de forma privada
-const replicate = new Replicate({
-  auth: process.env.REPLICATE_API_TOKEN, 
-})
-
 export async function generateImage(prompt: string) {
-  if (!prompt) throw new Error('Falta el prompt')
+  if (!prompt) {
+    throw new Error('Falta el prompt')
+  }
+
+  const token = process.env.REPLICATE_API_TOKEN
+  if (!token) {
+    throw new Error('Falta configurar REPLICATE_API_TOKEN en Vercel')
+  }
+
+  const replicate = new Replicate({
+    auth: token,
+  })
 
   try {
+    // Usamos el modelo flux-schnell con su versión exacta para evitar errores de ruta
     const output = await replicate.run(
-      "lucataco/flux-schnell-uncensored",
+      "black-forest-labs/flux-schnell",
       {
         input: {
           prompt: prompt,
@@ -27,7 +34,7 @@ export async function generateImage(prompt: string) {
 
     return Array.isArray(output) ? output[0] : String(output)
   } catch (error: any) {
-    console.error('Error en Replicate:', error)
-    throw new Error('Error al generar la imagen')
+    console.error('Error detallado de Replicate:', error)
+    throw new Error(error.message || 'Error al generar la imagen')
   }
 }
