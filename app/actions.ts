@@ -11,14 +11,14 @@ export async function generateImage(prompt: string) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        version: 'lucataco/flux-schnell-uncensored',
+        version: 'SG161222/Realistic_Vision_V6.0_B1_noVAE',
         input: {
           prompt: prompt,
+          negative_prompt: 'deformado, feo, borroso, mala calidad, agua marca',
           disable_safety_checker: true,
-          go_fast: true,
-          num_outputs: 1,
-          aspect_ratio: "1:1",
-          output_format: "webp"
+          num_inference_steps: 30,
+          guidance_scale: 7.5,
+          num_outputs: 1
         }
       })
     })
